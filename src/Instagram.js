@@ -24,18 +24,22 @@ class Instagram {
         return this.ig.account.login(username, password);
     }
 
-    async getFollowers() {
-        const followersFeed = this.ig.feed.accountFollowers(this.ig.state.cookieUserId);
-        const followers = await followersFeed.items();
+    async getAllItems(feed) {
+        let items = [];
 
-        return followers;
+        do {
+            items = items.concat(await feed.items());
+        } while (feed.isMoreAvailable());
+
+        return items;
     }
 
-    async getFollowing() {
-        const followingFeed = this.ig.feed.accountFollowing(this.ig.state.cookieUserId);
-        const following = await followingFeed.items();
+    getFollowers() {
+        return this.getAllItems(this.ig.feed.accountFollowers(this.ig.state.cookieUserId));
+    }
 
-        return following;
+    getFollowing() {
+        return this.getAllItems(this.ig.feed.accountFollowing(this.ig.state.cookieUserId));
     }
 
     getUserInfo(id) {
